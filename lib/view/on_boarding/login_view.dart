@@ -18,7 +18,18 @@ class _LoginViewState extends State<LoginView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Spacer(),
+            TextFormField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Username',
+              ),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Password',
+              ),
+            ),
             ElevatedButton(
             onPressed: () => {
               Navigator.pop(context)
@@ -33,7 +44,6 @@ class _LoginViewState extends State<LoginView> {
             },
             child: const Text("Enter"),
             ),
-            const Spacer()
           ],
         ),
       ),
