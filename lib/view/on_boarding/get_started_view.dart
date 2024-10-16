@@ -10,6 +10,7 @@ class GetStartedView extends StatefulWidget {
 
 class _GetStartedViewState extends State<GetStartedView> {
   PageController controller = PageController();
+  
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
