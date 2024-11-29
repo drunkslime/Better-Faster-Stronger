@@ -149,7 +149,7 @@ class TableExercises {
             5. Pull your shoulder blades back, squeeze, pause, and then slowly lower the weight back to the starting position.
             6. Repeat for desired reps.''',
         _tipsColumn: '''1. Your back must remain straight at all times. Your torso should be kept still throughout the entire set.
-            2. Don\'t let your shoulders hunch over when your arms are extended.
+            2. Don't let your shoulders hunch over when your arms are extended.
             3. Use the back muscles to move the weight - do not lean forward and use momentum to swing the weight back.
             4.Pausing and squeezing at the top of the movement for a 1-2 count will increase intensity and results.''',
         _imageColumn: '/assets/img/machinerow.jpg',
@@ -264,7 +264,7 @@ class TableExercises {
             6. Once your upper arms are slightly past parallel to the floor, pause, and then slowly raise the barbell back up without locking the elbows out at the top of the movement.
             7. Repeat for desired reps.''',
         _tipsColumn: '''1. To help avoid injury, do not lower the bar much further than the top of your head when bringing the bar down behind you. This will keep your arms at a 90-degree angle to the floor and place less stress on your shoulder joints.
-            2. Keep your back straight throughout the movement. Don\'t let it arc too much when pressing the weight.
+            2. Keep your back straight throughout the movement. Don't let it arc too much when pressing the weight.
             3. Use a lighter weight than you would on a regular barbell press.
             4. Use slow and controlled movement, both when pressing and when lowering the weight.''',
         _imageColumn: '/assets/img/smithmachineshoulderpressbehindneck.jpg',
