@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:better_faster_stronger/services/database_service.dart';
 import 'package:better_faster_stronger/view/exercise/exercise_details.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +21,7 @@ class _GetExercisePageState extends State<GetExercisePage> {
     Logger logger = Logger();
 
     TextEditingController searchController = TextEditingController();
+    DatabaseService databaseService = DatabaseService();
 
     return Scaffold(
       body: Container(
@@ -45,23 +44,61 @@ class _GetExercisePageState extends State<GetExercisePage> {
               SearchBar( 
                 controller: searchController,
                 onSubmitted: (value) async {
-                    var url = Uri.http('26.136.164.153:8000', '/accessor/exercises/', {'name__startswith': value}); 
-                    var response = await http.get(url);
-                    if (response.statusCode == 200) {
-                      logger.d('response.statusCode: ${response.statusCode} \n value: $value \n response.body: ${response.body}');
-                      var data = jsonDecode(response.body);
-                      logger.d('jsonDecode data: $data');
+                    try {
+                      var data = await databaseService.getResponse(searchController.text)
+                                      .then((value) => 
+                                        ((value.statusCode == 200) ?
+                                          
+                                          jsonDecode(value.body) :
+
+                                          throw Exception('''
+                                            Status code: ${value.statusCode}\n
+                                            Body: ${value.body}'''
+                                          )
+                                        )
+                                      );
                       Navigator.push(context,
                         MaterialPageRoute(builder: (context) => ExerciseDetails(exerciseData: data[0])),
                       );
-                    } else {
-                      logger.d('response.statusCode: ${response.statusCode} \n value: $value \n response.body: ${response.body}');
+                    } catch (e) {
+                      logger.e('e: $e');
                     }
+
+                    // var url = Uri.http('26.136.164.153:8000', '/accessor/exercises/', {'name__startswith': value}); 
+                    // var response = await http.get(url);
+                    // if (response.statusCode == 200) {
+                    //   logger.d('response.statusCode: ${response.statusCode} \n value: $value \n response.body: ${response.body}');
+                    //   var data = jsonDecode(response.body);
+                    //   logger.d('jsonDecode data: $data');
+                    //   Navigator.push(context,
+                    //     MaterialPageRoute(builder: (context) => ExerciseDetails(exerciseData: data[0])),
+                    //   );
+                    // } else {
+                    //   logger.d('response.statusCode: ${response.statusCode} \n value: $value \n response.body: ${response.body}');
+                    // }
                   },
                 ),
               ElevatedButton(
-                onPressed: () => {
-                  
+                onPressed: () async {
+                  try {
+                      var data = await databaseService.getResponse(searchController.text)
+                                      .then((value) => 
+                                        ((value.statusCode == 200) ?
+                                          
+                                          jsonDecode(value.body) :
+
+                                          throw Exception('''
+                                            Status code: ${value.statusCode}\n
+                                            Body: ${value.body}'''
+                                          )
+                                        )
+                                      );
+                      Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => ExerciseDetails(exerciseData: data[0])),
+                      );
+                    } catch (e) {
+                      logger.e('e: $e');
+                    }
                 },
                 child: const Text("Search")
               ),
@@ -72,3 +109,5 @@ class _GetExercisePageState extends State<GetExercisePage> {
     );
   }
 }
+
+
