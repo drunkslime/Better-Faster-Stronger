@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Exercise(models.Model):
@@ -76,15 +77,15 @@ class Exercise(models.Model):
                     advices_text__isnull=False), 
                 name='advices_text_not_null'),
 
-            models.CheckConstraint(
-                condition=models.Q(
-                    image__startswith='/assets/img/'), 
-                name='image_check'),
+            # models.CheckConstraint(
+            #     condition=models.Q(
+            #         image__startswith='assets/img/'), 
+            #     name='image_check'),
 
-            models.CheckConstraint(
-                condition=models.Q(
-                    video__startswith='/assets/raw/'), 
-                name='video_check'),
+            # models.CheckConstraint(
+            #     condition=models.Q(
+            #         video__startswith='assets/raw/'), 
+            #     name='video_check'),
 
         ]
 
@@ -99,3 +100,19 @@ class Exercise(models.Model):
                 {self.advices_text}, 
                 {self.image}, 
                 {self.video}'''
+    
+
+class Account(models.Model):
+    userRef = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, null = True)
+    sex = models.CharField(max_length=100, null = True)
+    age = models.CharField(max_length=100, null = True)
+    weight = models.CharField(max_length=100, null = True)
+    height = models.CharField(max_length=100, null = True)
+    
+
+
+    def __str__(self):
+        return f'''
+                {self.userRef}
+                '''
