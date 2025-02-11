@@ -90,16 +90,7 @@ class Exercise(models.Model):
         ]
 
     def __str__(self):
-        return f'''{self.name}, 
-                {self.type}, 
-                {self.group}, 
-                {self.equipment}, 
-                {self.level}, 
-                {self.mechanics}, 
-                {self.guide_text}, 
-                {self.advices_text}, 
-                {self.image}, 
-                {self.video}'''
+        return f'''{self.name}'''
     
 
 class Account(models.Model):
@@ -109,10 +100,17 @@ class Account(models.Model):
     age = models.CharField(max_length=100, null = True)
     weight = models.CharField(max_length=100, null = True)
     height = models.CharField(max_length=100, null = True)
-    
+    workouts = models.JSONField(null=False, default=list)
 
 
     def __str__(self):
         return f'''
                 {self.userRef}
                 '''
+    
+class Workout(models.Model): 
+    accountRef = models.ForeignKey(Account, on_delete=models.CASCADE)
+    exercises = models.JSONField(null=False, default=list)
+    
+    def __str__(self):
+        return f'''{self.id}'''

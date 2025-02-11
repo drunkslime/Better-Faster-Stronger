@@ -10,7 +10,8 @@ urlpatterns = [
 
     path('accounts/getUsers', views.Accounts.getAllUsers, name='get_all_users'),
     path('accounts/getAccounts', views.Accounts.getAllAccounts, name='get_all_accounts'),
-    path('accounts/getUserAccount', views.Accounts.getUserAccount, name='get_user_account'),        
+    path('accounts/getUserAccount', views.Accounts.getUserAccountById, name='get_user_account'),        
     path('accounts/authUser', views.Accounts.authUser, name='auth_user'),        
-    path('accounts/registerUser', views.Accounts.registerUser, name='register_user'),        
+    path('accounts/registerUser', views.Accounts.registerUser, name='register_user'),
+    path('accounts/addWorkout', views.Accounts.addWorkout, name='add_workout'), # (int) id, (str) name, (str) description     
 ]

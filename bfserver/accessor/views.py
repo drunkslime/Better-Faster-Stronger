@@ -2,9 +2,12 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.core.exceptions import ValidationError
 
-from .models import Exercise
-from .models import Account
+from .models import Exercise, Account, Workout
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+import json
+
+
 
 # Create your views here.
 def index(request):
@@ -13,12 +16,6 @@ def index(request):
 class ExerciseData:
 
     FILTER_KEYS = ["id", "name", "name__startswith", "type", "group", "equipment", "level", "mechanics"]
-
-    def getAll(request):
-        queryset = Exercise.objects.all()
-
-        data = list(queryset)
-        return JsonResponse(data, safe=False)
 
     def get (request):
         try:
@@ -35,6 +32,12 @@ class ExerciseData:
             return JsonResponse({"error": str(e)}, status=400)    
         except Exception as e:
             return JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
+    
+    def getAll(request):
+        queryset = Exercise.objects.all().values()
+
+        data = list(queryset)
+        return JsonResponse(data, safe=False)
 
 class Accounts:
 
@@ -44,7 +47,7 @@ class Accounts:
     def getAllUsers(request):
         return JsonResponse(list(User.objects.all().values()), safe=False)    
 
-    # Check the existance of user during authentification
+    # Check the existance of user
     def userExists(request):
         try:
             queryset = User.objects.filter(username=request.GET['username'])
@@ -57,7 +60,10 @@ class Accounts:
 
     # Send if user exists
     def getUserAccount(request): 
-        return JsonResponse(list(Account.objects.filter(userRef__username=request.GET['username']).values()), safe=False)
+        return JsonResponse(list(Account.objects.filter(userRef__username=request.GET['username']).values())[0], safe=False)
+    
+    def getUserAccountById(request):
+        return JsonResponse(list(Account.objects.filter(id=request.GET['id']).values())[0], safe=False)
 
     def createNewUser(request):
         try:
@@ -72,7 +78,8 @@ class Accounts:
         try:
             user = User.objects.get(username=request.GET['username'])
             Account.objects.create(userRef=user, name=request.GET['name'], sex=request.GET['sex'], age=request.GET['age'], weight=request.GET['weight'], height=request.GET['height'])
-            return JsonResponse({'message': 'Success'}, safe=False)
+            accountData = Account.objects.filter(userRef__username=user.username).values()[0]
+            return JsonResponse(accountData, safe=False)
         except ValidationError as e:
             return JsonResponse({"error:": str(e)}, status=400)
         except Exception as e:
@@ -81,10 +88,11 @@ class Accounts:
     def authUser(request):
         try:
             if Accounts.userExists(request) == 404: return JsonResponse({'message': 'User not found'}, status=404)
-            user = User.objects.get(username=request.GET['username'])
-            if not user.check_password(request.GET['password']): 
-                return JsonResponse({'message': 'Wrong password'}, status=401)
-            return HttpResponse(status=200)
+            user = authenticate(username=request.GET['username'], password=request.GET['password'])
+            if user is None: 
+                return JsonResponse({'message': 'Wrong credentials'}, status=401)
+            accountData = Account.objects.filter(userRef__username=user.username).values()[0]
+            return JsonResponse(accountData, safe=False, status=200)
         except ValidationError as e:
             return JsonResponse({"error:": str(e)}, status=400)
         except Exception as e:
@@ -92,13 +100,31 @@ class Accounts:
         
     def registerUser(request):
         try:
-            if Accounts.userExists(request) == 200: return JsonResponse({'message': 'User already exists'}, status=400)
+            if Accounts.userExists(request).status_code == 200: return JsonResponse({'message': 'User already exists'}, status=400)
             Accounts.createNewUser(request)
-            Accounts.createNewAccount(request)
-            return HttpResponse(status=200)
+            accountData = Accounts.createNewAccount(request)
+            return JsonResponse(json.loads(accountData.content.decode('utf-8')), safe=False, status=200)
         except ValidationError as e:
             return JsonResponse({"error:": str(e)}, status=400)
         except Exception as e:
             return JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
         
 
+    def addWorkout(request):
+        try:
+            account = Account.objects.get(id=request.GET['id'])
+            workout = Workout.objects.create(accountRef=account)
+            workout.save()
+            account.workouts.append(
+                {
+                    "id": workout.id,
+                    "name": request.GET['name'],
+                    "description": request.GET['description']
+                }
+            )
+            account.save()
+            return HttpResponse("Workout added")
+        except ValidationError as e:
+            return JsonResponse({"error:": str(e)}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
