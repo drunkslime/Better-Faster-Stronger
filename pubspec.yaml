@@ -36,6 +36,8 @@ dependencies:
   logger: ^2.4.0
   http: ^1.2.2
   json: ^0.20.2
+  video_player: ^2.9.2
+  shared_preferences: ^2.3.5
 
 dev_dependencies:
   flutter_test:

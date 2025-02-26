@@ -1,5 +1,6 @@
+import 'package:better_faster_stronger/view/on_boarding/user_log_in_form.dart';
 import 'package:flutter/material.dart';
-import 'user_data_form_view.dart';
+import 'user_registration_form.dart';
 
 class GetStartedView extends StatefulWidget {
   const GetStartedView({super.key});
@@ -10,7 +11,7 @@ class GetStartedView extends StatefulWidget {
 
 class _GetStartedViewState extends State<GetStartedView> {
   PageController controller = PageController();
-  
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
@@ -35,16 +36,32 @@ class _GetStartedViewState extends State<GetStartedView> {
                   Text('Welcome! Let\'s get started!',
                       style: theme.textTheme.titleLarge),
                   const SizedBox(height: 10.0),
-                  ElevatedButton.icon(
-                      onPressed: () => {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const UserDataFormView()))
-                          },
-                      icon: const Icon(Icons.chevron_right),
-                      label: const Text('Let\'s Go!')),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                          onPressed: () => {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const UserRegistrationForm()))
+                              },
+                          icon: const Icon(Icons.person_pin_rounded),
+                          label: const Text('Register')),
+                      const SizedBox(width: 10.0),
+                      ElevatedButton.icon(
+                          onPressed: () => {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const UserLogInForm()))
+                              },
+                          icon: const Icon(Icons.login),
+                          label: const Text('Log In')),
+                    ],
+                  ),
                 ],
               ),
             ),

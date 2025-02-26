@@ -113,4 +113,4 @@ class Workout(models.Model):
     exercises = models.JSONField(null=False, default=list)
     
     def __str__(self):
-        return f'''{self.id}'''
+        return '{"id": %s, "accountRef": %s, "exercises": %s}' % (self.id, self.accountRef, self.exercises)

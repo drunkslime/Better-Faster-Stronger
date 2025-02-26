@@ -128,3 +128,80 @@ class Accounts:
             return JsonResponse({"error:": str(e)}, status=400)
         except Exception as e:
             return JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
+        
+
+    def deleteWorkout(request):
+        try:
+            workout = Workout.objects.get(id=request.GET['id'])
+            workout.accountRef.workouts.pop(int(request.GET['index']))
+            workout.delete()
+            workout.save()
+            workout.accountRef.save()
+            return HttpResponse("Workout removed")
+        except ValidationError as e:
+            return JsonResponse({"error:": str(e)}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
+
+    def getWorkout(request):
+        try:
+            workout = Workout.objects.get(id=request.GET['id'])
+            return JsonResponse(workout.exercises, safe=False)
+        except ValidationError as e:
+            return JsonResponse({"error:": str(e)}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
+        
+    
+    def addExerciseToWorkout(request):
+        try:
+            isTime = 'time' in list(request.GET.keys())
+            print(isTime)
+            workout = Workout.objects.get(id=request.GET['workoutId'])
+            exercise = Exercise.objects.get(id=request.GET['exerciseId'])
+
+            if 'index' in list(request.GET.keys()) and request.GET['index'] != 'null':
+                workout.exercises.insert(int(request.GET['index']), {
+                    "id": exercise.id,
+                    "Sets": request.GET['sets'],
+                    f"{'Time' if isTime else 'Reps'}": request.GET[f'{"time" if isTime else "reps"}'],
+                })
+            else:
+                workout.exercises.append({
+                    "id": exercise.id,
+                    "Sets": request.GET['sets'],
+                    f"{'Time' if isTime else 'Reps'}": request.GET[f'{"time" if isTime else "reps"}'],
+                })
+
+            workout.save()
+            return HttpResponse("Exercise added")
+        except ValidationError as e:
+            return JsonResponse({"error:": str(e)}, status=400)
+        except Exception as e:
+            
+            return JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
+        
+    def removeExerciseFromWorkout(request):
+        try:
+            workout = Workout.objects.get(id=request.GET['workoutId'])
+            workout.exercises.pop(int(request.GET['index']))
+            workout.save()
+            return HttpResponse("Exercise removed")
+        except ValidationError as e:
+            return JsonResponse({"error:": str(e)}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
+        
+    def reorderExerciseInWorkout(request):
+        try:
+            workout = Workout.objects.get(id=request.GET['workoutId'])
+            exerciseCopy = workout.exercises[int(request.GET['oldIndex'])]
+            workout.exercises.pop(int(request.GET['oldIndex']))
+            workout.exercises.insert(int(request.GET['newIndex']), exerciseCopy)
+            workout.save()
+            return HttpResponse("Exercise reordered from " + request.GET['oldIndex'] + " to " + request.GET['newIndex'])
+        except ValidationError as e:
+            return JsonResponse({"error:": str(e)}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
+        
