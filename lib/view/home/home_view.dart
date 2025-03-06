@@ -4,8 +4,7 @@ import 'package:better_faster_stronger/view/home/workouts/workouts_preview.dart'
 import 'package:flutter/material.dart';
 
 class HomeView extends StatefulWidget {
-  // final UserData userData;
-  const HomeView({super.key /*, required this.userData*/});
+  const HomeView({super.key});
 
   @override
   State<HomeView> createState() => _HomeViewState();

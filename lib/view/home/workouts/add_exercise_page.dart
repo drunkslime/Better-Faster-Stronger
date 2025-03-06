@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously, prefer_adjacent_string_concatenation
-
 import 'package:better_faster_stronger/services/database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -30,11 +28,15 @@ class _AddExercisePageState extends State<AddExercisePage> {
       var httpUrl = Uri.http(databaseService.address, '/accessor/exercises/',
           {'name__startswith': searchController.text});
 
-      await databaseService.getResponse(httpUrl).then((value) =>
-          ((value.statusCode == 200)
-              ? chosenExercise = jsonDecode(value.body)[0]
-              : ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(content: Text('Not Found')))));
+      await databaseService.getResponse(httpUrl)
+      .then((value) {
+        if (value.statusCode == 200) {
+          chosenExercise = jsonDecode(value.body)[0];
+        } else {
+          while(!mounted) {}
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not Found')));
+        }
+      });
       setState(() {});
     } catch (e) {
       logger.e('e: $e');

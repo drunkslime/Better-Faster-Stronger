@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_brace_in_string_interps, prefer_adjacent_string_concatenation, prefer_interpolation_to_compose_strings
-
 import 'dart:convert';
 
 import 'package:better_faster_stronger/services/database_service.dart';
@@ -37,10 +35,10 @@ class _WorkoutsPreviewState extends State<WorkoutsPreview> {
         //ignore: use_build_context_synchronously
         Navigator.pop(context);
       }
-      Logger().i("User Data: ${_userData}" +
-        "\nWorkouts are null: ${_userData['workouts'] == null}"
-        + "\nWorkouts runtimeType: ${_userData['workouts'].runtimeType}"
-        + "\nWorkouts are empty (length = 0): ${_userData['workouts'].length == 0}");
+      Logger().i('''User Data: $_userData
+        \nWorkouts are null: ${_userData['workouts'] == null}
+        \nWorkouts runtimeType: ${_userData['workouts'].runtimeType}
+        \nWorkouts are empty (length = 0): ${_userData['workouts'].length == 0}''');
     });
   }
 
@@ -60,7 +58,7 @@ class _WorkoutsPreviewState extends State<WorkoutsPreview> {
             _loadUserData();
           });
         } else {
-          Logger().e("Status Code: ${value.statusCode}" + "\nBody: ${value.body}");
+          Logger().e("Status Code: ${value.statusCode} \nBody: ${value.body}");
         }
       }
     );
@@ -125,8 +123,8 @@ class _WorkoutsPreviewState extends State<WorkoutsPreview> {
                         return GestureDetector(
                           onTap: () async {
                             Logger().i(
-                              "Index: ${index}" 
-                              + "\nIndex Runtime Type: ${_userData['workouts'][index]['id'].runtimeType}"
+                              '''Index: $index 
+                              \nIndex Runtime Type: ${_userData['workouts'][index]['id'].runtimeType}'''
                             );
                             await Navigator.of(context).push(
                               MaterialPageRoute(
@@ -166,7 +164,7 @@ class _WorkoutsPreviewState extends State<WorkoutsPreview> {
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
                                   child: Container(
-                                    alignment: Alignment.center,
+                                    alignment: Alignment.center,  
                                     color: theme.colorScheme.surface,
                                     child: Column(
                                       children: [
@@ -188,7 +186,7 @@ class _WorkoutsPreviewState extends State<WorkoutsPreview> {
                         );
                       },
                     )
-                  : const Center(child: CircularProgressIndicator()),
+                  : Center(child: Text('Nothing here yet', style: theme.textTheme.displayLarge,)),
             )),
       );
     });

@@ -25,7 +25,6 @@ class ExerciseData:
 
             queryset = Exercise.objects.filter(**filters).values()
             data = list(queryset)
-            
             if not data: return JsonResponse({"error": "No results found"}, status=404)
             return JsonResponse(data, safe=False)
         except ValidationError as e:

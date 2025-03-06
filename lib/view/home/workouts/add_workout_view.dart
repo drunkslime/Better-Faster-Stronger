@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:better_faster_stronger/services/database_service.dart';
 import 'package:better_faster_stronger/services/shared_preference_service.dart';
 import 'package:flutter/material.dart';
@@ -40,11 +38,13 @@ class _AddWorkoutViewState extends State<AddWorkoutView> {
     await databaseService.getResponse(httpUrl)
       .then((value) {
         if (value.statusCode == 200) {
-          Navigator.pop(context, true);
+          while(!mounted) {}
+          if(mounted) Navigator.pop(context, true);
         }
         else {
           Logger().i(value.body);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value.statusCode.toString())));
+          while(!mounted){}
+          if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value.statusCode.toString())));
         }
       });
   }

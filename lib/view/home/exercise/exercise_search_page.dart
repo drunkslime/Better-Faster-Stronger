@@ -17,6 +17,26 @@ class _ExerciseSearchPageState extends State<ExerciseSearchPage> {
   TextEditingController searchController = TextEditingController();
   DatabaseService databaseService = DatabaseService();
 
+  Future<Map<String, dynamic>> _getExerciseData(query) async {
+    var httpUrl = Uri.http(
+      databaseService.address,
+      '/accessor/exercises/',
+      {'name__startswith': searchController.text}
+    );
+
+    List<dynamic> data = [];
+    await databaseService.getResponse(httpUrl)
+    .then((value) {
+      if (value.statusCode == 200) {
+        data = jsonDecode(value.body);
+      } else {
+          Logger().e("Status Code: ${value.statusCode} \nBody: ${value.body}");
+        }
+      } 
+    );
+    return data[0];
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
@@ -46,53 +66,26 @@ class _ExerciseSearchPageState extends State<ExerciseSearchPage> {
               SearchBar(
                 controller: searchController,
                 onSubmitted: (value) async {
-                  try {
-                    var httpUrl = Uri.http(
-                        databaseService.address,
-                        '/accessor/exercises/',
-                        {'name__startswith': searchController.text});
-                    var data = await databaseService.getResponse(httpUrl).then(
-                        (value) => ((value.statusCode == 200)
-                            ? jsonDecode(value.body)
-                            : throw Exception('''
-                                            Status code: ${value.statusCode}\n
-                                            Body: ${value.body}''')));
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ExerciseDetails(exerciseData: data[0])),
+                  Map<String, dynamic> data = await _getExerciseData(searchController.text);
+                  while(!mounted) {}
+                  if (mounted) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => ExerciseDetails(exerciseData: data)),
                     );
-                  } catch (e) {
-                    logger.e('e: $e');
                   }
                 },
               ),
-              ElevatedButton(
-                  onPressed: () async {
-                    try {
-                      var httpUrl = Uri.http(
-                          databaseService.address,
-                          '/accessor/exercises/',
-                          {'name__startswith': searchController.text});
-                      var data = await databaseService
-                          .getResponse(httpUrl)
-                          .then((value) => ((value.statusCode == 200)
-                              ? jsonDecode(value.body)
-                              : throw Exception('''
-                                            Status code: ${value.statusCode}\n
-                                            Body: ${value.body}''')));
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                ExerciseDetails(exerciseData: data[0])),
-                      );
-                    } catch (e) {
-                      logger.e('e: $e');
-                    }
-                  },
-                  child: const Text("Search")),
+            ElevatedButton(
+              onPressed: () async {
+                Map<String, dynamic> data = await _getExerciseData(searchController.text);
+                while(!mounted) {}
+                if (mounted) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => ExerciseDetails(exerciseData: data)),
+                  );
+                }
+              },
+              child: const Text("Search")),
             ],
           ),
         ),

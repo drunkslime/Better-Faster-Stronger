@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_brace_in_string_interps, prefer_interpolation_to_compose_strings, prefer_adjacent_string_concatenation, use_build_context_synchronously, unnecessary_string_interpolations
-
 import 'dart:convert';
 
 import 'package:better_faster_stronger/services/database_service.dart';
@@ -36,16 +34,14 @@ class _WorkoutDetailsViewState extends State<WorkoutDetailsView>
         '/accessor/accounts/getUserAccount', {'id': userId.toString()});
     await databaseService.getResponse(httpUrl).then((value) {
       if (value.statusCode == 200) {
-        if (!mounted) {
-          Logger().e("Mounted: ${mounted}");
-          return;
-        }
+        while (!mounted) {}
         setState(() {
           _userData = jsonDecode(value.body);
           _userData['workouts'] ??= [];
         });
       } else {
-        Navigator.pop(context);
+        while (!mounted) {}
+        if (mounted) Navigator.pop(context);
       }
     });
   }
@@ -60,11 +56,11 @@ class _WorkoutDetailsViewState extends State<WorkoutDetailsView>
         if (!mounted) return;
 
         //---------------------------------------------------------------------------------------------
-        Logger().i("Workout Body: ${workoutValue.body}" +
-            "\nWorkout Body Runtime type: ${workoutValue.body.runtimeType}" +
-            "\nWorkout Decoded Body: ${jsonDecode(workoutValue.body)}" +
-            "\nWorkout Decoded Body Runtime type: ${jsonDecode(workoutValue.body).runtimeType}" +
-            "\nWorkout Decoded Body[0] Runtime type: ${(jsonDecode(workoutValue.body).length > 0) ? jsonDecode(workoutValue.body)[0]?.runtimeType : null}");
+        Logger().i('''Workout Body: ${workoutValue.body}
+            \nWorkout Body Runtime type: ${workoutValue.body.runtimeType}
+            \nWorkout Decoded Body: ${jsonDecode(workoutValue.body)}
+            \nWorkout Decoded Body Runtime type: ${jsonDecode(workoutValue.body).runtimeType}
+            \nWorkout Decoded Body[0] Runtime type: ${(jsonDecode(workoutValue.body).length > 0) ? jsonDecode(workoutValue.body)[0]?.runtimeType : null}''');
         //---------------------------------------------------------------------------------------------
 
         List<dynamic> temp = [];
@@ -79,8 +75,8 @@ class _WorkoutDetailsViewState extends State<WorkoutDetailsView>
             if (exerciseValue.statusCode == 200) {
               //---------------------------------------------------------------------------------------------
               Logger().i(
-                  "Exercises Decoded Body: ${jsonDecode(exerciseValue.body)}" +
-                      "Exercises Decoded Runtime type: ${jsonDecode(exerciseValue.body).runtimeType}");
+                  '''Exercises Decoded Body: ${jsonDecode(exerciseValue.body)}
+                    \nExercises Decoded Runtime type: ${jsonDecode(exerciseValue.body).runtimeType}''');
               //---------------------------------------------------------------------------------------------
 
               temp.add(jsonDecode(exerciseValue.body)[0]);
@@ -98,19 +94,20 @@ class _WorkoutDetailsViewState extends State<WorkoutDetailsView>
           exercises = temp;
 
           //---------------------------------------------------------------------------------------------
-          Logger().i("Exercises List Runtime type: ${exercises.runtimeType}" +
-              "\nExercises List Length: ${exercises.length}" +
-              "\nExercises List Element Keys: ${(exercises.isNotEmpty) ? exercises[0]?.keys : null}" +
-              "\nExercises List Element Runtime type: ${(exercises.isNotEmpty) ? exercises[0].runtimeType : null}");
+          Logger().i('''Exercises List Runtime type: ${exercises.runtimeType}
+          \nExercises List Length: ${exercises.length}
+          \nExercises List Element Keys: ${(exercises.isNotEmpty) ? exercises[0]?.keys : null}
+          \nExercises List Element Runtime type: ${(exercises.isNotEmpty) ? exercises[0].runtimeType : null}''');
           //---------------------------------------------------------------------------------------------
         });
       } else {
         //---------------------------------------------------------------------------------------------
-        Logger().e("Status Code: ${workoutValue.statusCode}" +
-            "\nBody: ${workoutValue.body}");
+        Logger().e('''Status Code: ${workoutValue.statusCode} 
+        \nBody: ${workoutValue.body}''');
         //---------------------------------------------------------------------------------------------
 
-        Navigator.pop(context);
+        while (!mounted) {}
+        if (mounted) Navigator.pop(context);
       }
     });
   }
@@ -122,11 +119,12 @@ class _WorkoutDetailsViewState extends State<WorkoutDetailsView>
       'workoutId': _userData['workouts'][widget.index]['id'].toString(),
       'exerciseId': exercise?['id'].toString() ?? '',
       'sets': exercise?['Sets'].toString() ?? '',
-      '${(isTime) ? 'time' : 'reps'}': exercise?['${(isTime) ? 'Time' : 'Reps'}'].toString() ?? '',
+      (isTime) ? 'time' : 'reps':
+          exercise?[(isTime) ? 'Time' : 'Reps'].toString() ?? '',
       'index': exercise?['index'].toString() ?? 'null',
     });
 
-    Logger().i("Url: ${httpUrl}");
+    Logger().i("Url: $httpUrl");
 
     await databaseService.getResponse(httpUrl).then((value) {
       if (value.statusCode == 200) {
@@ -134,8 +132,7 @@ class _WorkoutDetailsViewState extends State<WorkoutDetailsView>
           _setExercisesList();
         });
       } else {
-        Logger()
-            .e("Status Code: ${value.statusCode}" + "\nBody: ${value.body}");
+        Logger().e("Status Code: ${value.statusCode} \nBody: ${value.body}");
       }
     });
   }
@@ -153,8 +150,7 @@ class _WorkoutDetailsViewState extends State<WorkoutDetailsView>
           _setExercisesList();
         });
       } else {
-        Logger()
-            .e("Status Code: ${value.statusCode}" + "\nBody: ${value.body}");
+        Logger().e("Status Code: ${value.statusCode} \nBody: ${value.body}");
       }
     });
   }
@@ -165,24 +161,21 @@ class _WorkoutDetailsViewState extends State<WorkoutDetailsView>
   }
 
   void _reorderExercise(int oldIndex, int newIndex) async {
-    var httpUrl = Uri.http(
-      databaseService.address,
-      '/accessor/accounts/reorderExerciseInWorkout',
-      {
-        'workoutId': _userData['workouts'][widget.index]['id'].toString(),
-        'oldIndex': oldIndex.toString(),
-        'newIndex': newIndex.toString(),
-      }
-    );
+    var httpUrl = Uri.http(databaseService.address,
+        '/accessor/accounts/reorderExerciseInWorkout', {
+      'workoutId': _userData['workouts'][widget.index]['id'].toString(),
+      'oldIndex': oldIndex.toString(),
+      'newIndex': newIndex.toString(),
+    });
 
     await databaseService.getResponse(httpUrl).then((value) {
       if (value.statusCode == 200) {
-        Logger().i("Status Code: ${value.statusCode}" + "\nBody: ${value.body}");
+        Logger().i("Status Code: ${value.statusCode} \nBody: ${value.body}");
         setState(() {
           _setExercisesList();
         });
       } else {
-        Logger().e("Status Code: ${value.statusCode}" + "\nBody: ${value.body}");
+        Logger().e("Status Code: ${value.statusCode} \nBody: ${value.body}");
       }
     });
   }
@@ -248,12 +241,11 @@ class _WorkoutDetailsViewState extends State<WorkoutDetailsView>
           ? FloatingActionButton(
               onPressed: () async {
                 var result = await Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => AddExercisePage()),
+                  MaterialPageRoute(builder: (context) => AddExercisePage()),
                 );
                 //-----------------------------------------------------------------------------
-                Logger().i("Result: ${result}" +
-                    "\nResult Runtime Type: ${result.runtimeType}");
+                Logger().i(
+                    "Result: $result \nResult Runtime Type: ${result.runtimeType}");
                 //-----------------------------------------------------------------------------
                 if (result?.isNotEmpty ?? false) {
                   _addExercise(result);
@@ -351,14 +343,13 @@ class _WorkoutDetailsViewState extends State<WorkoutDetailsView>
                 final item = exercises.removeAt(oldIndex);
                 exercises.insert(newIndex, item);
 
-                setState(() {
-                });
+                setState(() {});
 
                 _reorderExercise(oldIndex, newIndex);
               },
               itemBuilder: (context, index) {
                 return Card(
-                  key: Key('${index}'),
+                  key: Key('$index'),
                   elevation: 2,
                   margin: const EdgeInsets.only(bottom: 16),
                   shape: RoundedRectangleBorder(
@@ -376,83 +367,81 @@ class _WorkoutDetailsViewState extends State<WorkoutDetailsView>
                     },
                     onDoubleTap: () {
                       showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Choose Action'),
-                          actions: [
-                            TextButton(
-                              child: const Text('Edit'),
-                              onPressed: () async {
-                                var result = await Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return AddExercisePage(exerciseName: exercises[index]['name'],);
-                                    }
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: const Text('Choose Action'),
+                                actions: [
+                                  TextButton(
+                                      child: const Text('Edit'),
+                                      onPressed: () async {
+                                        var result = await Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                                builder: (context) {
+                                          return AddExercisePage(
+                                            exerciseName: exercises[index]
+                                                ['name'],
+                                          );
+                                        }));
+                                        if (result?.isNotEmpty ?? false) {
+                                          setState(() {
+                                            result['index'] = index;
+                                            _editExercise(index, result);
+                                          });
+                                        }
+                                      }),
+                                  TextButton(
+                                    child: const Text('Remove'),
+                                    onPressed: () => showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                              title:
+                                                  const Text('Remove Exercise'),
+                                              content: const Text(
+                                                  'Are you sure you want to remove this exercise from your workout?'),
+                                              actions: [
+                                                TextButton(
+                                                  child: const Text('Cancel'),
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                ),
+                                                TextButton(
+                                                  child: const Text('Remove'),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      _removeExercise(index);
+                                                    });
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                              ],
+                                            )),
                                   )
-                                );
-                                if (result?.isNotEmpty ?? false) {
-                                  setState(() {
-                                    result['index'] = index;
-                                    _editExercise(index, result);
-                                  });
-                                }
-                              }
-                            ),
-                            TextButton(
-                              child: const Text('Remove'),
-                              onPressed: () => showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Remove Exercise'),
-                                  content: const Text(
-                                      'Are you sure you want to remove this exercise from your workout?'),
-                                  actions: [
-                                    TextButton(
-                                      child: const Text('Cancel'),
-                                      onPressed: () => Navigator.pop(context),
-                                    ),
-                                    TextButton(
-                                      child: const Text('Remove'),
-                                      onPressed: () {
-                                        setState(() {
-                                          _removeExercise(index);
-                                        });
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                  ],
-                                )
-                              ),
-                            )
-                          ],
-                        )
-                      );
+                                ],
+                              ));
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Row(
                         children: [
-                          Icon(Icons.drag_handle, color: theme.colorScheme.onSurface),
+                          Icon(Icons.drag_handle,
+                              color: theme.colorScheme.onSurface),
                           const SizedBox(width: 16),
-
                           Expanded(
-                            child: Text(exercises[index]['name'], style: theme.textTheme.bodyLarge),
+                            child: Text(exercises[index]['name'],
+                                style: theme.textTheme.bodyLarge),
                           ),
-
-                          Column(
-                            children: [
-                              Text(
-                                'Sets: ${exercises[index]['Sets'] ?? Null}',
-                                style: theme.textTheme.bodyMedium,
-                              ),
-                              Text(
-                                (exercises[index].containsKey('Time'))
-                                    ? 'Time: ${exercises[index]['Time'] ?? Null} min'
-                                    : 'Reps: ${exercises[index]['Reps'] ?? Null}',
-                                style: theme.textTheme.bodyMedium,
-                              ),
-                            ]
-                          ),
+                          Column(children: [
+                            Text(
+                              'Sets: ${exercises[index]['Sets'] ?? Null}',
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                            Text(
+                              (exercises[index].containsKey('Time'))
+                                  ? 'Time: ${exercises[index]['Time'] ?? Null} min'
+                                  : 'Reps: ${exercises[index]['Reps'] ?? Null}',
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                          ]),
                         ],
                       ),
                     ),

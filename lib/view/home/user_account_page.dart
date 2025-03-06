@@ -34,8 +34,8 @@ class _UserAccountPageState extends State<UserAccountPage> {
             _userData = jsonDecode(value.body);
           });
         } else {
-          //ignore: use_build_context_synchronously
-          Navigator.pop(context);
+          while(!mounted) {}
+          if (mounted) Navigator.pop(context);
         }
       }
     );

@@ -87,14 +87,18 @@ class _UserLogInFormState extends State<UserLogInForm> {
                                       .then((value) {
                                         if (value.statusCode == 200) { 
                                           sharedPreferenceService.saveUserId(jsonDecode(value.body)['id']);
-                                          // ignore: use_build_context_synchronously
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                          while (!mounted) {}
+                                          if (mounted) {
+                                            Navigator.push(context, MaterialPageRoute(builder: (context) {
                                               return const HomeView();
                                             }));
+                                          }
                                         } else {
-                                          // ignore: use_build_context_synchronously
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('${value.statusCode}: ${value.reasonPhrase}')));
+                                          while (!mounted) {}
+                                          if (mounted) {
+                                            ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(content: Text('${value.statusCode}: ${value.reasonPhrase}')));
+                                          }
                                         }
                                       }
                                     );
