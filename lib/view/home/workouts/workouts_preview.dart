@@ -32,7 +32,6 @@ class _WorkoutsPreviewState extends State<WorkoutsPreview> {
           _userData = jsonDecode(value.body);
         });
       } else {
-        //ignore: use_build_context_synchronously
         Navigator.pop(context);
       }
       Logger().i('''User Data: $_userData
@@ -122,15 +121,11 @@ class _WorkoutsPreviewState extends State<WorkoutsPreview> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () async {
-                            Logger().i(
-                              '''Index: $index 
-                              \nIndex Runtime Type: ${_userData['workouts'][index]['id'].runtimeType}'''
-                            );
                             await Navigator.of(context).push(
                               MaterialPageRoute(
-                                  builder: (context) => WorkoutDetailsView(
-                                      index: index
-                                  )
+                                builder: (context) => WorkoutDetailsView(
+                                    index: index
+                                )
                               ),
                             );
                           },

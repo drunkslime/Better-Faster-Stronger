@@ -17,25 +17,25 @@ class _ExerciseSearchPageState extends State<ExerciseSearchPage> {
   TextEditingController searchController = TextEditingController();
   DatabaseService databaseService = DatabaseService();
 
-  Future<Map<String, dynamic>> _getExerciseData(query) async {
-    var httpUrl = Uri.http(
-      databaseService.address,
-      '/accessor/exercises/',
-      {'name__startswith': searchController.text}
-    );
+    Future<Map<String, dynamic>> _getExerciseData(query) async {
+      var httpUrl = Uri.http(
+        databaseService.address,
+        '/accessor/exercises/',
+        {'name__startswith': searchController.text}
+      );
 
-    List<dynamic> data = [];
-    await databaseService.getResponse(httpUrl)
-    .then((value) {
-      if (value.statusCode == 200) {
-        data = jsonDecode(value.body);
-      } else {
-          Logger().e("Status Code: ${value.statusCode} \nBody: ${value.body}");
-        }
-      } 
-    );
-    return data[0];
-  }
+      List<dynamic> data = [];
+      await databaseService.getResponse(httpUrl)
+      .then((value) {
+        if (value.statusCode == 200) {
+          data = jsonDecode(value.body);
+        } else {
+            Logger().e("Status Code: ${value.statusCode} \nBody: ${value.body}");
+          }
+        } 
+      );
+      return data[0];
+    }
 
   @override
   Widget build(BuildContext context) {

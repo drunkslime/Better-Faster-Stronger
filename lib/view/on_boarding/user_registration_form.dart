@@ -4,6 +4,7 @@ import 'package:better_faster_stronger/services/database_service.dart';
 import 'package:better_faster_stronger/services/shared_preference_service.dart';
 import 'package:better_faster_stronger/view/home/home_view.dart';
 import 'package:flutter/material.dart';
+
 import 'package:logger/logger.dart';
 
 class UserRegistrationForm extends StatefulWidget {
@@ -24,6 +25,33 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
   TextEditingController heightController = TextEditingController();
   TextEditingController weightController = TextEditingController();
   String? _dropdownSexValue;
+
+void _registerUser(Map<String, dynamic> userData) async {
+  var httpUrl = Uri.http(databaseService.address,
+    '/accessor/accounts/registerUser',
+    userData
+  );
+
+  await databaseService.getResponse(httpUrl)
+    .then((value) {
+      if (value.statusCode == 200) {
+        sharedPreferenceService.saveUserId(jsonDecode(value.body)?['id']);
+        while(!mounted) {}
+        if (mounted) Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeView()));
+      } else {
+        while(!mounted) {}
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${value.statusCode}: ${value.reasonPhrase}')
+            )
+          );
+          Logger().e('Error ${value.statusCode}: ${value.reasonPhrase}\n${value.body}');
+        }
+      }
+    }
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +129,10 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                       value: 'Female',
                       child: Text('Female'),
                     ),
+                    DropdownMenuItem<String>(
+                      value: 'Other',
+                      child: Text('Other'),
+                    )
                   ],
                   value: _dropdownSexValue,
                   onChanged: (value) {
@@ -165,40 +197,17 @@ class _UserRegistrationFormState extends State<UserRegistrationForm> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    try {
-                      var httpUrl = Uri.http(databaseService.address,
-                        '/accessor/accounts/registerUser',
-                        {
-                          'username': usernameController.text,
-                          'password': passwordController.text,
-                          'name': nameController.text,
-                          'sex': _dropdownSexValue,
-                          'age': ageController.text,
-                          'height': heightController.text,
-                          'weight': weightController.text
-                        }
-                      );
-                      await databaseService
-                          .getResponse(httpUrl)
-                          .then((value) {
-                            if (value.statusCode == 200) {
-                              sharedPreferenceService.saveUserId(jsonDecode(value.body)['id']);
-                              while(!mounted) {}
-                              if (mounted) Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeView()));
-                            } else {
-                              while(!mounted) {}
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('${value.statusCode}: ${value.reasonPhrase}')
-                                  )
-                                );
-                              }
-                            }
-                          });
-                    } catch (e) {
-                      Logger().e('e: $e');
-                    }
+                    _registerUser(
+                      {
+                        'username': usernameController.text,
+                        'password': passwordController.text,
+                        'name': nameController.text,
+                        'sex': _dropdownSexValue,
+                        'age': ageController.text,
+                        'height': heightController.text,
+                        'weight': weightController.text
+                      }
+                    );
                   },
                   child: const Text("Enter"),
                 ),

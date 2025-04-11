@@ -66,47 +66,94 @@ class Accounts:
 
     def createNewUser(request):
         try:
-            User.objects.create_user(username=request.GET['username'], password=request.GET['password'])
-            return JsonResponse({'message': 'Success'}, safe=False)
+            user = User.objects.create_user(username=request.GET['username'], password=request.GET['password'])
+            return user, JsonResponse({'message': 'Success'}, safe=False)
         except ValidationError as e:
-            return JsonResponse({"error:": str(e)}, status=400)
+            return None, JsonResponse({"error:": str(e)}, status=400)
         except Exception as e:
-            return JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
+            return None, JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
 
-    def createNewAccount(request):
+    def createNewAccount(request, user: User):
         try:
-            user = User.objects.get(username=request.GET['username'])
-            Account.objects.create(userRef=user, name=request.GET['name'], sex=request.GET['sex'], age=request.GET['age'], weight=request.GET['weight'], height=request.GET['height'])
+            account = Account.objects.create(
+                userRef=user, 
+                name=request.GET['name'], 
+                sex=request.GET['sex'], 
+                age=request.GET['age'], 
+                weight=request.GET['weight'], 
+                height=request.GET['height']
+            )
             accountData = Account.objects.filter(userRef__username=user.username).values()[0]
             return JsonResponse(accountData, safe=False)
         except ValidationError as e:
-            return JsonResponse({"error:": str(e)}, status=400)
+            return JsonResponse({"error:": str(e), "error type": type(e)}, status=400)
         except Exception as e:
-            return JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
+            user.delete()
+            return JsonResponse({"error": "An error occurred", "error type": type(e), "details": str(e)}, status=500)
         
     def authUser(request):
         try:
-            if Accounts.userExists(request) == 404: return JsonResponse({'message': 'User not found'}, status=404)
+            if Accounts.userExists(request).status_code == 404:
+                return JsonResponse({'message': 'User not found'}, status=404)
             user = authenticate(username=request.GET['username'], password=request.GET['password'])
             if user is None: 
                 return JsonResponse({'message': 'Wrong credentials'}, status=401)
             accountData = Account.objects.filter(userRef__username=user.username).values()[0]
             return JsonResponse(accountData, safe=False, status=200)
         except ValidationError as e:
-            return JsonResponse({"error:": str(e)}, status=400)
+            return JsonResponse({"error:": str(e), "error type": type(e)}, status=400)
         except Exception as e:
-            return JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
+            return JsonResponse({"error": "An error occurred", "error type": type(e), "details": str(e)}, status=500)
         
+
+    def validateData(request):
+        if (type(request.GET['age']) is not int):
+            raise ValidationError('Age should be an integer.')
+        if (type(request.GET['weight']) is not int):
+            raise ValidationError('Weight should be an integer.')
+        if (type(request.GET['height']) is not int):
+            raise ValidationError('Height should be an integer.')
+        if (type(request.GET['sets']) is not int):
+            raise ValidationError('Number of sets should be an integer')
+        if (type(request.GET['reps']) is not int):
+            raise ValidationError('Number of reps should be an integer')
+        if (type(request.GET['time']) is not int):
+            raise ValidationError('Time should be an integer')
+        if (request.GET['age'] <= 0 or request.GET['age'] >= 100):
+            raise ValueError('The age should be a number between 0 and 100.')
+        if (request.GET['weight'] <= 0 or request.GET['weight'] >= 1000):
+            raise ValueError('The weight should be a number between 0 and 1000.')
+        if (request.GET['height'] <= 0 or request.GET['height'] >= 300):
+            raise ValueError('The height should be a number between 0 and 300')
+        if (request.GET['sets'] <= 0 or request.GET['sets'] >= 99):
+            raise ValueError('The sets value should be a number between 0 and 99')
+        if (request.GET['reps'] <= 0 or request.GET['reps'] >= 999):
+            raise ValueError('The reps should be a number between 0 and 999')
+        if (request.GET['time'] <= 0 or request.GET['time'] >= 999):
+            raise ValueError('The time value should be a number between 0 and 999')
+        if (len(request.GET['username']) == 0 or len(request.GET['username']) >= 50):
+            raise ValueError('The usernamename should be less than 50 characters and not empty.')
+        if (len(request.GET['name']) == 0 or len(request.GET['name']) >= 100):
+            raise ValueError('The name should be less than 100 characters and not empty.')
+
     def registerUser(request):
         try:
-            if Accounts.userExists(request).status_code == 200: return JsonResponse({'message': 'User already exists'}, status=400)
-            Accounts.createNewUser(request)
-            accountData = Accounts.createNewAccount(request)
-            return JsonResponse(json.loads(accountData.content.decode('utf-8')), safe=False, status=200)
+            if Accounts.userExists(request).status_code == 200:
+                return JsonResponse({'message': 'User already exists'}, status=400)
+
+            user, user_response = Accounts.createNewUser(request)
+            if not user:
+                return user_response
+            
+            account_response = Accounts.createNewAccount(request, user)
+            if account_response.status_code != 200:
+                return account_response
+            
+            return JsonResponse(json.loads(account_response.content.decode('utf-8')), safe=False, status=200)
         except ValidationError as e:
-            return JsonResponse({"error:": str(e)}, status=400)
+            return JsonResponse({"error:": str(e), "error type": type(e)}, status=400)
         except Exception as e:
-            return JsonResponse({"error": "An error occurred", "details": str(e)}, status=500)
+            return JsonResponse({"error": "An error occurred", "error type": type(e), "details": str(e)}, status=500)
         
 
     def addWorkout(request):

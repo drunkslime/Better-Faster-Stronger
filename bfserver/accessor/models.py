@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 class Exercise(models.Model):
@@ -95,13 +96,36 @@ class Exercise(models.Model):
 
 class Account(models.Model):
     userRef = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100, null = True)
-    sex = models.CharField(max_length=100, null = True)
-    age = models.CharField(max_length=100, null = True)
-    weight = models.CharField(max_length=100, null = True)
-    height = models.CharField(max_length=100, null = True)
+    name = models.CharField(max_length=50, null = True)
+    sex = models.CharField(max_length=10, null = True)
+    age = models.IntegerField(null = True, validators=[MinValueValidator(1), MaxValueValidator(100)])
+    weight = models.IntegerField(null = True, validators=[MinValueValidator(1), MaxValueValidator(999)])
+    height = models.IntegerField(null = True, validators=[MinValueValidator(1), MaxValueValidator(999)])
     workouts = models.JSONField(null=False, default=list)
 
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(
+                    age__gt=0, age__lt=100
+                ),
+                name='age_check' 
+            ),
+
+            models.CheckConstraint(
+                condition=models.Q(
+                    weight__gt=0, weight__lt=999
+                ),
+                name='weight_check'
+            ),
+
+            models.CheckConstraint(
+                condition=models.Q(
+                    height__gt=0, height__lt=999
+                ),
+                name='height_check'
+            )
+        ]
 
     def __str__(self):
         return f'''

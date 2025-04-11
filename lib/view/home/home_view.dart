@@ -43,27 +43,27 @@ class _HomeViewState extends State<HomeView> {
           body: Center(
             child: page,
           ),
-          bottomNavigationBar: BottomNavigationBar(
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.fitness_center_outlined),
-                label: "Workouts",
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.search_outlined),
-                label: "Search",
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.account_circle_outlined),
-                label: "Account",
-              ),
-            ],
-            currentIndex: _selectedIndex,
-            backgroundColor: theme.colorScheme.surfaceContainer,
-            unselectedItemColor: theme.colorScheme.onSurface,
-            selectedItemColor: theme.colorScheme.primary,
-            onTap: _onItemTapped,
-          ),
+bottomNavigationBar: BottomNavigationBar(
+  items: const <BottomNavigationBarItem>[
+    BottomNavigationBarItem(
+      icon: Icon(Icons.fitness_center_outlined),
+      label: "Workouts",
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.search_outlined),
+      label: "Search",
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.account_circle_outlined),
+      label: "Account",
+    ),
+  ],
+  currentIndex: _selectedIndex,
+  backgroundColor: theme.colorScheme.surfaceContainer,
+  unselectedItemColor: theme.colorScheme.onSurface,
+  selectedItemColor: theme.colorScheme.primary,
+  onTap: _onItemTapped,
+),
         );
       },
     );

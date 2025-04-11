@@ -9,7 +9,8 @@
 .history
 .svn/
 migrate_working_dir/
-secretkey.py
+.env
+android/
 
 # IntelliJ related
 *.iml
@@ -46,3 +47,5 @@ ios/Flutter/Generated.xcconfig
 ios/Flutter/flutter_export_environment.sh
 ios/Runner/GeneratedPluginRegistrant.h
 ios/Runner/GeneratedPluginRegistrant.m
+
+

@@ -157,30 +157,30 @@ class _ExerciseDetailsState extends State<ExerciseDetails> {
                             const SizedBox(height: 10.0),
                             IconButton.filled(
                                 onPressed: 
-                                  () {
-                                    _videoPlayerController.play();
-                                    showDialog(
-                                      context: context, 
-                                      builder: (context) => Dialog.fullscreen(
-                                        backgroundColor: theme.colorScheme.primaryContainer,
-                                        child: FutureBuilder(
-                                          future: _initializeVideoPlayerFuture,
-                                          builder: (context, snapshot) {
-                                            if (snapshot.connectionState == ConnectionState.done) {
-                                              return AspectRatio(
-                                                aspectRatio: _videoPlayerController.value.aspectRatio,
-                                                child: VideoPlayer(_videoPlayerController)
-                                              );
-                                            } else {
-                                              return const Center(
-                                                child: CircularProgressIndicator()
-                                              );
-                                            }
+                                () {
+                                  _videoPlayerController.play();
+                                  showDialog(
+                                    context: context, 
+                                    builder: (context) => Dialog.fullscreen(
+                                      backgroundColor: theme.colorScheme.primaryContainer,
+                                      child: FutureBuilder(
+                                        future: _initializeVideoPlayerFuture,
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState == ConnectionState.done) {
+                                            return AspectRatio(
+                                              aspectRatio: _videoPlayerController.value.aspectRatio,
+                                              child: VideoPlayer(_videoPlayerController)
+                                            );
+                                          } else {
+                                            return const Center(
+                                              child: CircularProgressIndicator()
+                                            );
                                           }
-                                        )
-                                      ) 
-                                    );
-                                  },
+                                        }
+                                      )
+                                    ) 
+                                  );
+                                },
                                 icon: Icon(
                                   Icons.play_arrow,
                                   color: theme.colorScheme.onPrimaryContainer

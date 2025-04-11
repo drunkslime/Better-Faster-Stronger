@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:better_faster_stronger/services/shared_preference_service.dart';
 import 'package:better_faster_stronger/view/home/home_view.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 
 import 'package:better_faster_stronger/services/database_service.dart';
 
@@ -21,6 +20,35 @@ class _UserLogInFormState extends State<UserLogInForm> {
 
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  void _authUser(String username, String password) async {
+    var httpUrl = Uri.http(databaseService.address,
+      '/accessor/accounts/authUser',
+      {
+        'username': username, 'password': password
+      }
+    );
+
+    await databaseService.getResponse(httpUrl)
+      .then((value) {
+        if (value.statusCode == 200) { 
+          sharedPreferenceService.saveUserId(jsonDecode(value.body)['id']);
+          while (!mounted) {}
+          if (mounted) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const HomeView())
+            );
+          }
+        } else {
+          while (!mounted) {}
+          if (mounted) {
+            ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('${value.statusCode}: ${value.reasonPhrase}')));
+          }
+        }
+      }
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,35 +104,7 @@ class _UserLogInFormState extends State<UserLogInForm> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    try {
-                      var httpUrl = Uri.http(databaseService.address,
-                        '/accessor/accounts/authUser',
-                        {
-                          'username': usernameController.text, 'password': passwordController.text
-                        }
-                      );
-                      await databaseService.getResponse(httpUrl)
-                                      .then((value) {
-                                        if (value.statusCode == 200) { 
-                                          sharedPreferenceService.saveUserId(jsonDecode(value.body)['id']);
-                                          while (!mounted) {}
-                                          if (mounted) {
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                              return const HomeView();
-                                            }));
-                                          }
-                                        } else {
-                                          while (!mounted) {}
-                                          if (mounted) {
-                                            ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(content: Text('${value.statusCode}: ${value.reasonPhrase}')));
-                                          }
-                                        }
-                                      }
-                                    );
-                    } catch (e) {
-                      Logger().e('e: $e');
-                    }
+                    _authUser(usernameController.text, passwordController.text);
                   },
                   child: const Text("Log In"),
                 ),
