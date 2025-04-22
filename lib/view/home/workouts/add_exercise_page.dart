@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'dart:convert';
 
+// ignore: must_be_immutable
 class AddExercisePage extends StatefulWidget {
   String? exerciseName;
   AddExercisePage({super.key, this.exerciseName});
