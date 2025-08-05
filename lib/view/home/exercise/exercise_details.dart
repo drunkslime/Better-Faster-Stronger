@@ -20,7 +20,7 @@ class _ExerciseDetailsState extends State<ExerciseDetails> {
   void initState() {
     super.initState();
 
-    _videoPlayerController = VideoPlayerController.asset(widget.exerciseData['video']);
+    _videoPlayerController = VideoPlayerController.asset(widget.exerciseData['video'] ?? '');
     _initializeVideoPlayerFuture = _videoPlayerController.initialize();
     setState(() {});
   }

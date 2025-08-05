@@ -68,51 +68,53 @@ class _UserLogInFormState extends State<UserLogInForm> {
               theme.colorScheme.primaryContainer
             ])),
         child: SafeArea(
-            child: Form(
-                child: Column(
-          children: [
-            const Spacer(),
-            Text('Logging in', style: TextStyle(fontSize: 30, color: theme.colorScheme.onPrimary)),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: usernameController,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(),
-                labelText: 'Username',
-              ),
-            ),
-            const SizedBox(height: 10.0),
-            TextFormField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(),
-                labelText: 'Password  ',
-              ),
-            ),
-            const SizedBox(height: 15.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          child: Form(
+            child: Column(
               children: [
-                ElevatedButton(
-                  onPressed: () => {Navigator.pop(context)},
-                  child: const Text("Back"),
+                const Spacer(),
+                Text('Logging in', style: TextStyle(fontSize: 30, color: theme.colorScheme.onPrimary)),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: usernameController,
+                  decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(),
+                    labelText: 'Username',
+                  ),
                 ),
-                ElevatedButton(
-                  onPressed: () async {
-                    _authUser(usernameController.text, passwordController.text);
-                  },
-                  child: const Text("Log In"),
+                const SizedBox(height: 10.0),
+                TextFormField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(),
+                    labelText: 'Password  ',
+                  ),
                 ),
+                const SizedBox(height: 15.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => {Navigator.pop(context)},
+                      child: const Text("Back"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        _authUser(usernameController.text, passwordController.text);
+                      },
+                      child: const Text("Log In"),
+                    ),
+                  ],
+                ),
+                const Spacer(),
               ],
             ),
-            const Spacer(),
-          ],
-        ))),
+          )
+        ),
       ),
     );
   }

@@ -427,7 +427,7 @@ class _WorkoutDetailsViewState extends State<WorkoutDetailsView>
                                 ? 'Time: ${exercises[index]['Time'] ?? Null} min'
                                 : 'Reps: ${exercises[index]['Reps'] ?? Null}',
                             style: theme.textTheme.bodyMedium,
-                          ),
+                          ),  
                         ]),
                       ],
                     ),

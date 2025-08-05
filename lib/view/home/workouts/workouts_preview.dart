@@ -173,7 +173,7 @@ class _WorkoutsPreviewState extends State<WorkoutsPreview> {
                                             softWrap: true,
                                             maxLines: 5,
                                             textAlign: TextAlign.justify,
-                                            overflow: TextOverflow.ellipsis,
+                                            overflow: TextOverflow.ellipsis,  
                                             style: theme.textTheme.titleMedium),
                                       ],
                                     ),
