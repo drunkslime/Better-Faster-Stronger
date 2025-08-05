@@ -27,7 +27,7 @@ SECRET_KEY = environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [".vercel.app", "127.0.0.1"]
 
 # if DEBUG == True : ALLOWED_HOSTS = []
 # else: ALLOWED_HOSTS = ['http://127.0.0.1:8000',
@@ -40,6 +40,7 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'accessor.apps.AccessorConfig',
+    'accessor',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -76,7 +77,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'bfserver.wsgi.application'
+WSGI_APPLICATION = 'bfserver.wsgi.app'
 
 
 # Database
